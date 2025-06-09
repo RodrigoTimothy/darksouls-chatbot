@@ -3,11 +3,6 @@ import streamlit as st
 from langchain_core.messages import HumanMessage
 from tavily import graph
 
-headers = {
-    "Authorization": "Bearer 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",
-    "Content-Type": "application/json",
-}
-
 st.title("Somente as chamas eternas respondem... O que deseja saber?")
 
 with st.form("llm-form"):
@@ -26,7 +21,6 @@ def generate_response_via_graph(question):
         }
         full_query = f"""
             Você é uma especialista no universo de Dark Souls e deve responder na língua em que foi perguntado.
-            Responda de forma concisa e informativa, utilizando referências do jogo quando apropriado.
             Responda em tom sombrio e enigmático, como um guardião do fogo antigo.
             Agora, o usuário pergunta:
             {question}
@@ -35,7 +29,7 @@ def generate_response_via_graph(question):
         json_data = {
             "query": full_query,
             "include_answer": True,
-            "num_results": 5 
+            "num_results": 3
         }
 
         response = requests.post(

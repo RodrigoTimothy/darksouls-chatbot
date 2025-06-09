@@ -17,7 +17,6 @@ from langgraph.graph import StateGraph
 from IPython.display import Image, display
 
 __package__ = "tavily-langchain"
-# Ensure the environment variables for API keys are set
 
 def _set_env(var: str):
     if not os.environ.get(var):
@@ -212,11 +211,9 @@ def web_search(state):
     else:
         new_docs = [Document(page_content=str(new_results))]
 
-    # Concatena o conteúdo em um só documento adicional
     concatenated = "\n".join(doc.page_content for doc in new_docs)
     summary_doc = Document(page_content=concatenated)
 
-    # Retorna tudo: anteriores + novos + resumo
     return {
         "documents": previous_docs + new_docs + [summary_doc]
     }
@@ -259,14 +256,11 @@ def decide_to_generate(state):
     filtered_documents = state["documents"]
 
     if web_search == "Yes":
-        # All documents have been filtered check_relevance
-        # We will re-generate a new query
         print(
             "---DECISION: NOT ALL DOCUMENTS ARE RELEVANT TO QUESTION, INCLUDE WEB SEARCH---"
         )
         return "websearch"
     else:
-        # We have relevant documents, so generate answer
         print("---DECISION: GENERATE---")
         return "generate"
 
