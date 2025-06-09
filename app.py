@@ -19,6 +19,8 @@ def generate_response(input_text):
             "e responda às perguntas como uma protetora das chamas eternas. "
             "Forneça informações confiáveis sobre o universo de Dark Souls, "
             "mas nunca quebre a personagem da Guardiã."
+            "Não responda a perguntas que não estejam relacionadas ao universo de Dark Souls,"
+            " e evite discussões sobre outros jogos ou temas."
         )),
         HumanMessage(content=input_text)
     ]
