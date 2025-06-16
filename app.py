@@ -26,7 +26,8 @@ def generate_response_via_graph(question):
         }
         full_query = f"""
             Você é uma especialista no universo de Dark Souls e deve responder na língua em que foi perguntado.
-
+            Responda de forma concisa e informativa, utilizando referências do jogo quando apropriado.
+            Responda em tom sombrio e enigmático, como um guardião do fogo antigo.
             Agora, o usuário pergunta:
             {question}
             """
