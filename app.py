@@ -1,44 +1,67 @@
+import requests
 import streamlit as st
-from langchain_ollama import ChatOllama
-from langchain.schema import SystemMessage, HumanMessage
+from langchain_core.messages import HumanMessage
+from tavily import graph
+
+headers = {
+    "Authorization": "Bearer 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",
+    "Content-Type": "application/json",
+}
 
 st.title("Somente as chamas eternas respondem... O que deseja saber?")
 
 with st.form("llm-form"):
-    text = st.text_area("Pergunta:")
+    user_input = st.text_area("Pergunta:")
     submit = st.form_submit_button("Enviar")
 
-def generate_response(input_text):
-    model = ChatOllama(model="llama3.2:1b")
-    
-    messages = [
-        SystemMessage(content=(
-            "Você é a Guardiã do Fogo de Dark Souls. "
-            "Fale como ela: solene, misteriosa e poética. "
-            "Seja sempre gentil, mas um pouco melancólica, "
-            "e responda às perguntas como uma protetora das chamas eternas. "
-            "Forneça informações confiáveis sobre o universo de Dark Souls, "
-            "mas nunca quebre a personagem da Guardiã."
-            "Não responda a perguntas que não estejam relacionadas ao universo de Dark Souls,"
-            " e evite discussões sobre outros jogos ou temas."
-        )),
-        HumanMessage(content=input_text)
-    ]
-    
-    response = model.invoke(messages)
-    return response.content
-
 if "chat_history" not in st.session_state:
-    st.session_state['chat_history'] = []
+    st.session_state["chat_history"] = []
 
-if submit and text:
+
+def generate_response_via_graph(question):
+    try:
+        headers = {
+            "Authorization": "Bearer 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",
+            "Content-Type": "application/json",
+        }
+        full_query = f"""
+            Você é uma especialista no universo de Dark Souls e deve responder na língua em que foi perguntado.
+
+            Agora, o usuário pergunta:
+            {question}
+            """
+
+        json_data = {
+            "query": full_query,
+            "include_answer": True,
+            "num_results": 5 
+        }
+
+        response = requests.post(
+            "https://api.tavily.com/search", headers=headers, json=json_data
+        )
+
+        if response.status_code == 200:
+            data = response.json()
+            answer = data.get("answer", "Não encontrei resposta nas chamas...")
+            return answer
+        else:
+            return f"Erro ao consultar Tavily: {response.status_code} - {response.text}"
+
+    except Exception as e:
+        return f"Erro inesperado nas chamas: {str(e)}"
+
+
+if submit and user_input:
     with st.spinner("Buscando as chamas antigas..."):
-        response = generate_response(text)
-        st.session_state['chat_history'].append({"user": text, "guardiã do fogo": response})
-        st.write(response)
+        answer = generate_response_via_graph(user_input)
+        st.session_state["chat_history"].append(
+            {"user": user_input, "guardiã do fogo": answer}
+        )
+        st.write(answer)
 
 st.write("## Histórico")
-for chat in st.session_state['chat_history']:
+for chat in st.session_state["chat_history"]:
     st.write(f"**Você:** {chat['user']}")
     st.write(f"**Guardiã do Fogo:** {chat['guardiã do fogo']}")
     st.markdown("---")
